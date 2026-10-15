@@ -9,7 +9,6 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 APPS=(wordcraft deckcraft gridcraft pdfcraft)
 
 command -v curl >/dev/null || { echo "error: curl is required" >&2; exit 1; }
-command -v jq >/dev/null || { echo "error: jq is required" >&2; exit 1; }
 command -v unzip >/dev/null || { echo "error: unzip is required" >&2; exit 1; }
 mkdir -p "$SITE_DIR"
 
@@ -17,20 +16,21 @@ for app in "${APPS[@]}"; do
   download_dir="$TMP_DIR/$app"
   mkdir -p "$download_dir"
 
-  echo "Looking up the latest $app web release..."
-  release_json="$(curl --fail --silent --show-error --location \
-    -H 'Accept: application/vnd.github+json' \
-    "https://api.github.com/repos/storytold/$app/releases/latest")"
-  asset_url="$(jq -r --arg prefix "$app-web-" \
-    '[.assets[] | select(.name | startswith($prefix) and endswith(".zip"))][0].browser_download_url // empty' \
-    <<< "$release_json")"
-  if [[ -z "$asset_url" ]]; then
-    echo "error: latest $app release has no $app-web-*.zip asset" >&2
+  echo "Resolving the latest $app release..."
+  latest_url="$(curl --fail --silent --show-error --location \
+    --output /dev/null --write-out '%{url_effective}' \
+    "https://github.com/storytold/$app/releases/latest")"
+  if [[ "$latest_url" != "https://github.com/storytold/$app/releases/tag/"* ]]; then
+    echo "error: could not resolve the latest $app release tag ($latest_url)" >&2
     exit 1
   fi
 
-  archive="$download_dir/${asset_url##*/}"
-  curl --fail --silent --show-error --location "$asset_url" --output "$archive"
+  tag="${latest_url##*/}"
+  version="${tag#v}"
+  archive="$download_dir/$app-web-$version.zip"
+  asset_url="https://github.com/storytold/$app/releases/download/$tag/$(basename "$archive")"
+  curl --fail --silent --show-error --location --retry 3 --retry-all-errors \
+    "$asset_url" --output "$archive"
 
   package_name="$(basename "${archive%.zip}")"
   if ! unzip -q "$archive" -d "$download_dir"; then

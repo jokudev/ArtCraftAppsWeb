@@ -36,7 +36,7 @@ Open <http://localhost:8080>. To use a specific version, change the `image` valu
 
 ## Stage release assets locally
 
-Requirements: `curl`, `jq`, and `unzip`.
+Requirements: `curl` and `unzip`.
 
 ```sh
 ./scripts/fetch-release-web.sh
