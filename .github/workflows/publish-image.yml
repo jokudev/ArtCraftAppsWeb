@@ -20,32 +20,8 @@ jobs:
       - name: Check out this repository
         uses: actions/checkout@v4
 
-      - name: Install Rust and the WebAssembly target
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Check out upstream app sources
-        run: |
-          mkdir -p apps
-          for app in wordcraft deckcraft gridcraft pdfcraft; do
-            git clone --depth 1 --branch main "https://github.com/storytold/${app}.git" "apps/${app}"
-          done
-
-      - name: Cache Rust build artifacts
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            apps/wordcraft -> apps/wordcraft/target
-            apps/deckcraft -> apps/deckcraft/target
-            apps/gridcraft -> apps/gridcraft/target
-            apps/pdfcraft -> apps/pdfcraft/target
-
-      - name: Install Trunk
-        run: cargo install trunk --locked
-
-      - name: Update and build all web apps
-        run: ./scripts/update-build-web.sh
+      - name: Download and stage latest web release assets
+        run: ./scripts/fetch-release-web.sh
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

@@ -1,13 +1,13 @@
 # ArtCraft Apps Web
 
-Builds and serves the browser editions of [WordCraft](https://github.com/storytold/wordcraft),
+Serves the browser releases of [WordCraft](https://github.com/storytold/wordcraft),
 [DeckCraft](https://github.com/storytold/deckcraft), [GridCraft](https://github.com/storytold/gridcraft),
 and [PdfCraft](https://github.com/storytold/pdfcraft) from one small Nginx container.
 
-The app source repositories are cloned into `apps/` only when building. That directory is ignored
-by Git, so this repository stays focused on the build pipeline, hosting configuration, and landing
-page. Every build updates the app checkouts to the latest `main`, runs their upstream web packaging
-scripts, stages the generated sites under `site/`, and builds the container image.
+The build downloads each app's latest `*-web-*.zip` release asset, stages the four static sites,
+and builds a container image. It uses upstream release artifacts directly, so the pipeline does
+not compile the Rust apps. The source checkouts under `apps/` are ignored by Git and are not
+included in the container.
 
 ## Open the apps
 
@@ -18,66 +18,64 @@ scripts, stages the generated sites under `site/`, and builds the container imag
 | GridCraft | `/gridcraft/` |
 | PdfCraft | `/pdfcraft/` |
 
-The root page at `/` links to all four apps. The app bundles use relative asset paths and work under
-these URL prefixes.
+The root page at `/` links to all four apps. Each bundle uses relative asset paths, so it works
+under its URL prefix.
 
-## Run a prebuilt image
+## Run the published image
 
-The GitHub Actions workflow publishes `ghcr.io/jokudev/artcraftappsweb:latest` after builds on
-`main`. It also publishes a `sha-<commit>` tag for every workflow run and a version tag for Git
-tags matching `v*.*.*`.
+GitHub Actions publishes `ghcr.io/jokudev/artcraftappsweb:latest` after pushes to `main`. It also
+publishes a `sha-<commit>` tag for each successful build and version tags for Git tags matching
+`v*.*.*`.
 
 ```sh
 docker compose -f compose.ghcr.yaml up -d
 ```
 
-Open <http://localhost:8080>. To use a specific image tag, edit the `image` value in
+Open <http://localhost:8080>. To use a specific version, change the `image` value in
 `compose.ghcr.yaml`, for example `ghcr.io/jokudev/artcraftappsweb:sha-0123456`.
 
-The published package may need to be made public once in the GitHub Packages settings. After that,
-Docker hosts can pull it without logging in.
+## Stage release assets locally
 
-## Build locally
-
-Requirements: Git, Rust/Cargo, Trunk, the `wasm32-unknown-unknown` target, `zip`, `unzip`, and Docker
-with Compose.
+Requirements: `curl`, `jq`, and `unzip`.
 
 ```sh
-cargo install trunk --locked
-rustup target add wasm32-unknown-unknown
-./scripts/update-build-web.sh
-docker build -t artcraft-apps-web:local .
-docker run --rm -p 8080:80 artcraft-apps-web:local
+./scripts/fetch-release-web.sh
 ```
 
-Or serve the generated files directly with Nginx using the local Compose configuration:
+This downloads each app's latest GitHub release asset matching `wordcraft-web-*.zip`,
+`deckcraft-web-*.zip`, `gridcraft-web-*.zip`, and `pdfcraft-web-*.zip`, then extracts each under
+`site/<app>/`. The ignored `apps/` folders are optional source checkouts and are not used by this
+release-based pipeline.
+
+To serve the staged sites with the local Nginx container:
 
 ```sh
 docker compose up -d
 ```
 
-The local compose file mounts `site/` from the workspace. `compose.ghcr.yaml` runs the immutable
-image published to GHCR instead.
+To build the same image locally after staging:
 
-The update script clones repositories that are missing and fast-forwards clean checkouts on
-`main`. It stops if an existing checkout is on another branch or has local changes. Run it again
-after upstream updates to rebuild the bundles and refresh the published static sites.
+```sh
+docker build -t artcraft-apps-web:local .
+docker run --rm -p 8080:80 artcraft-apps-web:local
+```
 
-## Automated builds and publishing
+## Automated publishing
 
-`.github/workflows/publish-image.yml` runs on pushes to `main`, version tags, a weekly schedule,
-and manual dispatch. It checks out this repository, fetches the latest app sources, compiles and
-packages their web versions, then publishes a static Nginx image to GitHub Container Registry.
+`.github/workflows/publish-image.yml` runs on pushes to `main`, version tags, and manual
+dispatch. It downloads the latest web release assets, builds the static Nginx image, and pushes it
+to GitHub Container Registry. There is no scheduled build. Docker layer caching is enabled for
+subsequent image builds.
 
-The image contains only Nginx, the generated static app files, and license notices; Rust and the
-application source trees stay in the build runner. The static files are served with WebAssembly
-MIME handling, gzip compression, and long-lived caching for hashed assets.
+The image contains only Nginx, the generated static app files, and license notices. It serves
+WebAssembly with the correct MIME type, enables gzip compression, and gives hashed assets
+long-lived cache headers.
 
 ## License and notices
 
 The build scripts, container configuration, and landing page in this repository are licensed under
-Apache-2.0; see [LICENSE](LICENSE). The bundled applications are separate upstream projects and
-retain their own licenses and attribution. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Apache-2.0; see [LICENSE](LICENSE). The bundled apps are separate upstream projects and retain
+their own licenses and attribution. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ArtCraft names and logos are trademarks and are not licensed by Apache-2.0. This repository is an
 independent build and hosting project, not an official ArtCraft service.
