@@ -1,0 +1,6 @@
+services:
+  artcraft-apps-web:
+    image: ghcr.io/jokudev/artcraftappsweb:latest
+    ports:
+      - "8080:80"
+    restart: unless-stopped

@@ -1,0 +1,7 @@
+apps/
+.git/
+.github/
+target/
+**/target/
+**/dist/
+**/.git/
