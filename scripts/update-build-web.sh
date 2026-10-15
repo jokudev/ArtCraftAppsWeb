@@ -48,7 +48,7 @@ for app in "${APPS[@]}"; do
   echo "Building and packaging $app..."
   (cd "$checkout" && "$package_script")
 
-  archive="$(ls -1t "$checkout"/dist/"$app"-web-*.zip 2>/dev/null | head -n 1 || true)"
+  archive="$(find "$checkout/dist" -type f -name "$app-web-*.zip" -print0 | xargs -0 ls -t 2>/dev/null | head -n 1 || true)"
   if [[ -z "$archive" ]]; then
     echo "error: no $app web archive found in $checkout/dist" >&2
     exit 1
