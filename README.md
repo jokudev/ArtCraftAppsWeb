@@ -1,11 +1,16 @@
 # ArtCraft Apps Web
 
-Serves the browser releases of [WordCraft](https://github.com/storytold/wordcraft),
-[DeckCraft](https://github.com/storytold/deckcraft), [GridCraft](https://github.com/storytold/gridcraft),
-and [PdfCraft](https://github.com/storytold/pdfcraft) from one small Nginx container.
+Serves the browser releases of the Craft App Suite from one small Nginx container:
+[PhotoCraft](https://github.com/storytold/photocraft), [VectorCraft](https://github.com/storytold/vectorcraft),
+[FilmCraft](https://github.com/storytold/filmcraft), [LightCraft](https://github.com/storytold/lightcraft),
+[PdfCraft](https://github.com/storytold/pdfcraft), [EffectCraft](https://github.com/storytold/effectcraft),
+[DesignCraft](https://github.com/storytold/designcraft), [GridCraft](https://github.com/storytold/gridcraft),
+[WordCraft](https://github.com/storytold/wordcraft), [DeckCraft](https://github.com/storytold/deckcraft),
+[CADCraft](https://github.com/storytold/cadcraft), [SoundCraft](https://github.com/storytold/soundcraft),
+and [FigCraft](https://github.com/storytold/figcraft).
 
-The build downloads each app's latest `*-web-*.zip` release asset, stages the four static sites,
-and builds a container image. It uses upstream release artifacts directly, so the pipeline does
+The build downloads each app's latest `*-web-*.zip` release asset and stages all static sites.
+It then builds a container image. It uses upstream release artifacts directly, so the pipeline does
 not compile the Rust apps. The source checkouts under `apps/` are ignored by Git and are not
 included in the container.
 
@@ -13,12 +18,21 @@ included in the container.
 
 | App | Path |
 | --- | --- |
+| PhotoCraft | `/photocraft/` |
+| VectorCraft | `/vectorcraft/` |
+| FilmCraft | `/filmcraft/` |
+| LightCraft | `/lightcraft/` |
+| PdfCraft | `/pdfcraft/` |
+| EffectCraft | `/effectcraft/` |
+| DesignCraft | `/designcraft/` |
+| GridCraft | `/gridcraft/` |
 | WordCraft | `/wordcraft/` |
 | DeckCraft | `/deckcraft/` |
-| GridCraft | `/gridcraft/` |
-| PdfCraft | `/pdfcraft/` |
+| CADCraft | `/cadcraft/` |
+| SoundCraft | `/soundcraft/` |
+| FigCraft | `/figcraft/` |
 
-The root page at `/` links to all four apps. Each bundle uses relative asset paths, so it works
+The root page at `/` links to all apps. Each bundle uses relative asset paths, so it works
 under its URL prefix.
 
 ## Run the published image
@@ -42,10 +56,13 @@ Requirements: `curl` and `unzip`.
 ./scripts/fetch-release-web.sh
 ```
 
-This downloads each app's latest GitHub release asset matching `wordcraft-web-*.zip`,
-`deckcraft-web-*.zip`, `gridcraft-web-*.zip`, and `pdfcraft-web-*.zip`, then extracts each under
-`site/<app>/`. The ignored `apps/` folders are optional source checkouts and are not used by this
-release-based pipeline.
+This downloads each app's latest GitHub release asset matching:
+`photocraft-web-*.zip`, `vectorcraft-web-*.zip`, `filmcraft-web-*.zip`,
+`lightcraft-web-*.zip`, `pdfcraft-web-*.zip`, `effectcraft-web-*.zip`,
+`designcraft-web-*.zip`, `gridcraft-web-*.zip`, `wordcraft-web-*.zip`,
+`deckcraft-web-*.zip`, `cadcraft-web-*.zip`, `soundcraft-web-*.zip`, and
+`figcraft-web-*.zip`, then extracts each under `site/<app>/`. The ignored `apps/` folders are
+optional source checkouts and are not used by this release-based pipeline.
 
 To serve the staged sites with the local Nginx container:
 
