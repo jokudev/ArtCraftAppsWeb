@@ -2,10 +2,19 @@
 
 This image bundles browser builds and documentation from the following public projects:
 
+- [PhotoCraft](https://github.com/storytold/photocraft)
+- [VectorCraft](https://github.com/storytold/vectorcraft)
+- [FilmCraft](https://github.com/storytold/filmcraft)
+- [LightCraft](https://github.com/storytold/lightcraft)
+- [PdfCraft](https://github.com/storytold/pdfcraft)
+- [EffectCraft](https://github.com/storytold/effectcraft)
+- [DesignCraft](https://github.com/storytold/designcraft)
+- [GridCraft](https://github.com/storytold/gridcraft)
 - [WordCraft](https://github.com/storytold/wordcraft)
 - [DeckCraft](https://github.com/storytold/deckcraft)
-- [GridCraft](https://github.com/storytold/gridcraft)
-- [PdfCraft](https://github.com/storytold/pdfcraft)
+- [CADCraft](https://github.com/storytold/cadcraft)
+- [SoundCraft](https://github.com/storytold/soundcraft)
+- [FigCraft](https://github.com/storytold/figcraft)
 
 Each upstream repository is licensed under Apache License 2.0. The browser packages include
 upstream notices and documentation. See each repository for its complete license and attribution

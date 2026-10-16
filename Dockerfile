@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
 LABEL org.opencontainers.image.title="ArtCraft Apps Web"
-LABEL org.opencontainers.image.description="Static web builds of WordCraft, DeckCraft, GridCraft, and PdfCraft"
+LABEL org.opencontainers.image.description="Static web builds of the Craft App Suite"
 LABEL org.opencontainers.image.source="https://github.com/jokudev/ArtCraftAppsWeb"
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf

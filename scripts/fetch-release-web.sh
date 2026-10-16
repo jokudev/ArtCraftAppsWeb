@@ -6,7 +6,7 @@ SITE_DIR="$ROOT/site"
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-APPS=(wordcraft deckcraft gridcraft pdfcraft)
+APPS=(photocraft vectorcraft filmcraft lightcraft pdfcraft effectcraft designcraft gridcraft wordcraft deckcraft cadcraft soundcraft figcraft)
 
 command -v curl >/dev/null || { echo "error: curl is required" >&2; exit 1; }
 command -v unzip >/dev/null || { echo "error: unzip is required" >&2; exit 1; }
